@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: maven_class_service
+
+  datasource:
+    url: jdbc:mariadb://221.149.55.228:43306/minicampus
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: minicampus_user
+    password: a1234
+
+
+  thymeleaf:
+    suffix: .html
+    prefix: classpath:/templates/
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
