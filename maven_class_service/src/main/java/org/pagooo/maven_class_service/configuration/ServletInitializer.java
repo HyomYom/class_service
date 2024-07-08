@@ -1,5 +1,6 @@
-package org.pagooo.maven_class_service;
+package org.pagooo.maven_class_service.configuration;
 
+import org.pagooo.maven_class_service.MavenClassServiceApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
