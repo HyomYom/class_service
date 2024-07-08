@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: maven_class_service
+
+  datasource:
+#    url: jdbc:mariadb://221.149.55.228:3307/minicampus
+    url: jdbc:mariadb://localhost:3307/class
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: pagooo
+    password: 1234
+
+
+  thymeleaf:
+    suffix: .html
+    prefix: classpath:/templates/
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hyodrax@gmail.com
+    password: waxibbkgmfnzmbwe
+    properties:
+      mail :
+        smtp :
+          starttls :
+            enable :  true
