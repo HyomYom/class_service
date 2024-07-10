@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,12 +28,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
+        String encPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
         if(user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        if(!user.getPassword().equals(password)){
+        if(!BCrypt.checkpw(password, user.getPassword())){
             throw  new AuthenticationException("Invalid credential") {
             };
         }

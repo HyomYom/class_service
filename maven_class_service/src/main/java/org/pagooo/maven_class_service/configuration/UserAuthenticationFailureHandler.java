@@ -15,7 +15,7 @@ import java.io.IOException;
 public class UserAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        String errorMessage;
+        String errorMessage = "";
         if(exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException){
             errorMessage = "아이디나 비밀번호가 맞지 않습니다. 다시 확인해 주십시오.";
         }

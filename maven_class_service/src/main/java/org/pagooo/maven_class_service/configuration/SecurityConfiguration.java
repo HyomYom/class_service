@@ -41,7 +41,9 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable());
+        http.csrf(csrf -> {
+            csrf.disable();
+        });
 
         http
                 .authorizeHttpRequests((authz) -> authz
@@ -50,7 +52,7 @@ public class SecurityConfiguration {
 
                 ).formLogin(withDefaults());
 
-        http.formLogin(formLogin -> formLogin.loginPage("/member/login").permitAll().failureHandler(getFailureHandler())
+        http.formLogin(formLogin -> formLogin.loginPage("/member/login").failureHandler(getFailureHandler()).permitAll()
         );
 
 
