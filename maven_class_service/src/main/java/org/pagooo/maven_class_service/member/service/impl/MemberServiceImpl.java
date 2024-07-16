@@ -3,6 +3,7 @@ package org.pagooo.maven_class_service.member.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.pagooo.maven_class_service.member.components.MailComponents;
 import org.pagooo.maven_class_service.member.entity.Member;
+import org.pagooo.maven_class_service.member.exception.MemberNotEmailAuthException;
 import org.pagooo.maven_class_service.member.model.MemberInput;
 import org.pagooo.maven_class_service.member.repository.MemberRepository;
 import org.pagooo.maven_class_service.member.service.MemberService;
@@ -80,14 +81,19 @@ public class MemberServiceImpl implements MemberService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Optional<Member> optionalMember = memberRepository.findById(username); // 이메일
-        if(!optionalMember.isPresent()){
+        if(optionalMember.isEmpty()){
             throw new UsernameNotFoundException("회원 정보가 존재하지 않습닌다.");
+        }
+
+        Member member = optionalMember.get();
+
+        if(!member.isEmailAuthYn()){
+            throw new MemberNotEmailAuthException("이메일 활성화 이후에 로그인을 해주세요");
         }
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-        Member member = optionalMember.get();
 
 
         return new User(member.getUserId(), member.getPassword(), grantedAuthorities);
