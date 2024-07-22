@@ -34,3 +34,8 @@ spring:
         smtp :
           starttls :
             enable :  true
+
+#디버깅 레벨 설정
+logging:
+  level:
+    root: info

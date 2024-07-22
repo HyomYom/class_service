@@ -5,17 +5,19 @@
     <title>회원 가입 완료</title>
 </head>
 <body>
-    <div th:if="${result}">
+    <div th:if="${result eq true}">
         <h1>회원 가입 완료</h1>
+        <div th:replace="/fragments/layout.html :: fragment-body-menue">
+        </div>
         <p>회원 가입이 완료되었습니다.</p>
     </div>
 
     <div th:if="${result eq false}">
         <h1>회원 실패</h1>
-        <p>회원 가입에 실패하였습니다..</p>
+        <div th:replace="/fragments/layout.html :: fragment-body-menue">
+        </div>
+        <p>회원 가입에 실패하였습니다.</p>
     </div>
-
-
 
 </body>
 </html>

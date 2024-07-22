@@ -6,6 +6,8 @@
 </head>
 <body>
     <h1>회원 활성화</h1>
+    <div th:replace="/fragments/layout.html :: fragment-body-menue">
+    </div>
     <div th:if="${result eq true}">
         <p>회원님의 계정이 활성화 되었습니다.</p>
     </div>
