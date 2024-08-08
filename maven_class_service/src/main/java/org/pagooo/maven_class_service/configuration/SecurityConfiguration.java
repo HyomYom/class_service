@@ -32,6 +32,7 @@ public class SecurityConfiguration {
         .authorizeHttpRequests((request) -> request
                         .requestMatchers("/","/member/**").permitAll()
                         .anyRequest().authenticated()
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 
                 )
         .formLogin(formLogin -> formLogin.loginPage("/member/login").permitAll()
@@ -45,6 +46,11 @@ public class SecurityConfiguration {
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
+
+
+        )
+
+        .exceptionHandling( exception -> exception.accessDeniedPage("/error/denied")
 
         );
 
