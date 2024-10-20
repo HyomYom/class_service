@@ -1,9 +1,13 @@
 package org.pagooo.maven_class_service.member.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.pagooo.maven_class_service.admin.model.MemberParam;
 import org.pagooo.maven_class_service.member.components.MailComponents;
+import org.pagooo.maven_class_service.member.dto.MemberDto;
 import org.pagooo.maven_class_service.member.entity.Member;
 import org.pagooo.maven_class_service.member.exception.MemberNotEmailAuthException;
+import org.pagooo.maven_class_service.member.exception.MemberStopUserException;
+import org.pagooo.maven_class_service.member.mapper.MemberMapper;
 import org.pagooo.maven_class_service.member.model.MemberInput;
 import org.pagooo.maven_class_service.member.model.ResetPasswordInput;
 import org.pagooo.maven_class_service.member.repository.MemberRepository;
@@ -15,12 +19,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -29,6 +31,8 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final MailComponents mailComponents;
+
+    private final MemberMapper memberMapper;
 
     @Override
     public boolean register(MemberInput parameter) {
@@ -50,6 +54,7 @@ public class MemberServiceImpl implements MemberService {
                 .regDt(LocalDateTime.now())
                 .emailAuthYn(false)
                 .emailAuthKey(uuid)
+                .userStatus(Member.MEMBER_STATUS_REQUESTED)
                 .build();
 
         memberRepository.save(member);
@@ -57,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
         String email = parameter.getUserId();
         String subject = "Welcome Pagooo World";
         String text = "<p>Pagooo 사이트 가입을 축하드립니다.</p><p>아래 링크를 클릭하셔서 가입을 완료하세요.</p>"
-                    + "<div><a href='http://localhost:8080/member/email-auth?id="+uuid+"'>가입 완료</a></div>";
+                + "<div><a href='http://localhost:8080/member/email-auth?id="+uuid+"'>가입 완료</a></div>";
         mailComponents.sendMail(email, subject, text);
 
         return true;
@@ -71,8 +76,12 @@ public class MemberServiceImpl implements MemberService {
             return false;
         }
         Member member = optionalMember.get();
+        if(!member.isEmailAuthYn()){
+            return false;
+        }
         member.setEmailAuthYn(true);
         member.setEmailAuthDt(LocalDateTime.now());
+        member.setUserStatus(Member.MEMBER_STATUS_ACTIVE);
         memberRepository.save(member);
 
         return true;
@@ -146,23 +155,90 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
+    @Override
+    public List<MemberDto> list(MemberParam memberParam) {
+
+        long totalCount = memberMapper.selectListCount(memberParam);
+        List<MemberDto> memberDtos = memberMapper.selectList(memberParam);
+
+        if(!CollectionUtils.isEmpty(memberDtos)){
+            int i = 0;
+            for(MemberDto memberDto : memberDtos){
+                memberDto.setTotalCount(totalCount);
+                memberDto.setSeq(totalCount - memberParam.getPageStart() - i);
+                i++;
+            }
+        }
+
+        return memberDtos;
+
+    }
+
+    @Override
+    public MemberDto detail(String userId) {
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+        if(!optionalMember.isPresent()){
+            return null;
+        }
+
+        Member member = optionalMember.get();
+
+        return MemberDto.of(member);
+    }
+
+    @Override
+    public boolean updateStatus(String userId, String userStatus) {
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+        if(!optionalMember.isPresent()){
+            throw new UsernameNotFoundException(("회원 정보가 존재하지 않습니다."));
+        }
+        Member member = optionalMember.get();
+
+        member.setUserStatus(userStatus);
+        memberRepository.save(member);
+
+        return true;
+    }
+
+    @Override
+    public boolean updatePassword(String userId, String password) {
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+        if(!optionalMember.isPresent()){
+            throw new UsernameNotFoundException(("회원 정보가 존재하지 않습니다."));
+        }
+        Member member = optionalMember.get();
+        String encPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        member.setPassword(encPassword);
+        memberRepository.save(member);
+
+        return true;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Optional<Member> optionalMember = memberRepository.findById(username); // 이메일
         if(optionalMember.isEmpty()){
-            throw new UsernameNotFoundException("회원 정보가 존재하지 않습닌다.");
+            throw new UsernameNotFoundException("회원 정보가 존재하지 않습니다.");
         }
 
         Member member = optionalMember.get();
 
-        if(!member.isEmailAuthYn()){
+        if(Member.MEMBER_STATUS_REQUESTED.equals(member.getUserStatus())){
             throw new MemberNotEmailAuthException("이메일 활성화 이후에 로그인을 해주세요");
+        }
+
+        if(Member.MEMBER_STATUS_INACTIVE.equals(member.getUserStatus())){
+            throw new MemberStopUserException("정지된 회원입니다.");
         }
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        if(member.isAdminYn()){
+            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
 
 
 

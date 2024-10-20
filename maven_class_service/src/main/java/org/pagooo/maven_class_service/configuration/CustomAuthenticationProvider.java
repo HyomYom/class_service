@@ -37,7 +37,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 };
             }
         } catch (UsernameNotFoundException e) {
-            throw new UsernameNotFoundException(e.toString());
+            throw new UsernameNotFoundException(e.getMessage());
         } catch (MemberNotEmailAuthException e){
             throw new InternalAuthenticationServiceException(e.getMessage());
         }

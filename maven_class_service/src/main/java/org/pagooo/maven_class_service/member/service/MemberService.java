@@ -1,12 +1,14 @@
 package org.pagooo.maven_class_service.member.service;
 
 
+import org.pagooo.maven_class_service.admin.model.MemberParam;
+import org.pagooo.maven_class_service.member.dto.MemberDto;
 import org.pagooo.maven_class_service.member.model.MemberInput;
 import org.pagooo.maven_class_service.member.model.ResetPasswordInput;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Service;
 
-@Service
+import java.util.List;
+
 public interface MemberService extends UserDetailsService {
     boolean register(MemberInput parameter);
 
@@ -36,4 +38,24 @@ public interface MemberService extends UserDetailsService {
      * @return
      */
     boolean checkResetPassword(String uuid);
+
+    /**
+     * 회원 목록 리턴(관려ㅣ자에서만 사용 가능)
+     */
+    List<MemberDto> list(MemberParam memberParam);
+
+    /**
+     * 회원 상세 정보 리턴
+     * @param userId
+     * @return
+     */
+    MemberDto detail(String userId);
+
+    boolean updateStatus(String userId, String userStatus);
+
+
+    /**
+     * 회원 비밀번호 초기화
+     */
+    boolean updatePassword(String userId, String password);
 }

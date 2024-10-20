@@ -42,7 +42,7 @@ logging:
 
 
 mybatis:
-  mapper-locations: mybatis/**/*.xml
+  mapper-locations: classpath:/templates/mybatis/*.xml
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

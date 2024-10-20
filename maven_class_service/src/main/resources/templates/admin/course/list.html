@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 화면</title>
+
+    <style>
+        .list table {
+            width : 100%;
+            border-collapse: collapse;
+
+        }
+        .list table th, .list table td {
+            border: solid 1px;
+        }
+        p.nothing{
+            text-align: center;
+            padding: 1rem;
+        }
+        .inline-div{
+            display : inline-block;
+        }
+        .pager{
+            margin-top:20px;
+            text-align: center;
+        }
+        .pager a.on {
+            font-weigth : bold;
+            color: red;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function(){
+        })
+    </script>
+</head>
+<body>
+
+<h1>강좌 관리</h1>
+<div th:replace="/fragments/layout.html :: fragment-body-menue-admin">
+
+</div>
+<div>
+    <a href="/admin/course/add.do">강좌등록</a>
+</div>
+
+
+<div class="list">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>강좌명</th>
+            <th>등록일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="course : ${list}">
+            <td th:text="${course.seq}">1</td>
+            <td >
+                <p th:text="${course.subject}">
+                    <a th:href="'edit.do?id=' + ${course.id}"
+                       th:text="${course.subject}">강좌명</a>
+                </p>
+            </td>
+            <td th:text="${course.regDt}">pagooo@naver.com</td>
+        </tr>
+
+        </tbody>
+
+    </table>
+    <div class = "pager" th:utext="${pager} ">
+
+    </div>
+</div>
+
+</body>
+</html>
