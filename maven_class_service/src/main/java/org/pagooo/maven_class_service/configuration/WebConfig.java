@@ -2,6 +2,9 @@ package org.pagooo.maven_class_service.configuration;
 
 
 import lombok.RequiredArgsConstructor;
+import org.pagooo.maven_class_service.member.service.MemberService;
+import org.pagooo.maven_class_service.member.service.impl.MemberServiceImpl;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,9 +20,12 @@ public class WebConfig {
         return new UserAuthenticationFailureHandler();
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+
 
 }

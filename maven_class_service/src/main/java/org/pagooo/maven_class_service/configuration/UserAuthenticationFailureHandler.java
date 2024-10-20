@@ -1,7 +1,5 @@
 package org.pagooo.maven_class_service.configuration;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,6 +32,7 @@ public class UserAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
             errorMessage = "비밀번호 유효기간이 만료 되었습니다. 관리자에게 문의하세요.";
         }
         else if(exception instanceof UsernameNotFoundException){
+             log.error(exception.getMessage());
             errorMessage = exception.getMessage();
         }
         else {
